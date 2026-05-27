@@ -9,11 +9,11 @@ st.write("Welcome to our 5-friend live tournament tracker!")
 # 1. Define Friends and Draft Assignments
 # Edit these country lists right here in GitHub after your live draft night!
 draft_data = {
-    "Josh": ["Brazil", "USA", "Japan"],
-    "Aaron": ["Argentina", "Canada", "Morocco"],
-    "Alex": ["France", "Mexico", "Switzerland"],
-    "Dan": ["England", "Croatia", "South Korea"],
-    "Chris": ["Spain", "Germany", "South Africa"]
+    "Josh": ["TBD", "TBD", "TBD", "TBD", "TBD", "TBD"],
+    "Aaron": ["TBD", "TBD", "TBD", "TBD", "TBD", "TBD"],
+    "Alex": ["TBD", "TBD", "TBD", "TBD", "TBD", "TBD"],
+    "Dan": ["TBD", "TBD", "TBD", "TBD", "TBD", "TBD"],
+    "Chris": ["TBD", "TBD", "TBD", "TBD", "TBD", "TBD"]
 }
 
 # 2. Fetch Tournament Match Data
