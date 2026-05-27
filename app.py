@@ -3,8 +3,8 @@ import requests
 
 st.set_page_config(page_title="World Cup Pool", page_icon="⚽", layout="centered")
 
-st.title("⚽ World Cup Snake Draft Pool")
-st.write("Welcome to our 5-friend live tournament tracker!")
+st.title("⚽ World Cup Wins Pool 2026")
+st.write("Welcome to Newb Tube's 1st Annual World Cup Wins Pool!")
 
 # 1. Define Friends and Draft Assignments
 # Edit these country lists right here in GitHub after your live draft night!
