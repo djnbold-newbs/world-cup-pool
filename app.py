@@ -9,11 +9,11 @@ st.write("Welcome to Newb Tube's 1st Annual World Cup Wins Pool!")
 # 1. Define Friends and Draft Assignments
 # Edit these country lists right here in GitHub after your live draft night!
 draft_data = {
-    "Josh": ["TBD", "TBD", "TBD", "TBD", "TBD", "TBD"],
-    "Aaron": ["TBD", "TBD", "TBD", "TBD", "TBD", "TBD"],
-    "Alex": ["TBD", "TBD", "TBD", "TBD", "TBD", "TBD"],
-    "Dan": ["TBD", "TBD", "TBD", "TBD", "TBD", "TBD"],
-    "Chris": ["TBD", "TBD", "TBD", "TBD", "TBD", "TBD"]
+    "Josh": ["Spain", "Colombia", "Norway", "Turkey", "Sweden", "Iran"],
+    "Aaron": ["Brazil", "USA", "Japan", "Ecuador", "Senegal", "Ghana"],
+    "Alex": ["France", "Germany", "Belgium", "Switzerland", "Austria", "Scotland"],
+    "Dan": ["England", "Netherlands", "Mexico", "Morocco", "Canada", "Ivory Coast"],
+    "Chris": ["Argentina", "Portugal", "Uruguay", "Croatia", "Czech Republic", "South Korea"]
 }
 
 # 2. Fetch Tournament Match Data
