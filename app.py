@@ -29,10 +29,7 @@ def get_live_scores():
     # 🌟 MANUAL GAME DAY OVERRIDES 🌟
     # If the official repo is lagging, type the live scores right here!
     # Always type the country names in LOWERCASE here.
-    live_overrides = {
-        "usa": 3,       # e.g., USA won their game, manually adding 3 pts
-        "mexico": 1,    # e.g., Mexico drew, adding 1 pt
-    }
+    live_overrides = {}
 
     team_points = {}
     
