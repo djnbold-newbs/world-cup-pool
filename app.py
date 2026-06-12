@@ -3,8 +3,8 @@ import requests
 
 st.set_page_config(page_title="World Cup Pool", page_icon="⚽", layout="centered")
 
-st.title("⚽ World Cup Snake Draft Pool")
-st.write("Welcome to our 5-friend live tournament tracker!")
+st.title("⚽ Live World Cup Draft Pool")
+st.write("Live-syncing directly with official tournament match scores!")
 
 # ==========================================
 # 1. DEFINE FRIENDS & DRAFT ASSIGNMENTS
@@ -18,79 +18,54 @@ draft_data = {
 }
 
 # ==========================================
-# 2. FAIL-SAFE REAL-TIME DATA CALCULATOR
+# 2. LIVE REFRESH DATA ENGINE
 # ==========================================
-# Pulling from a public, structured mirror that doesn't block unauthenticated apps
-DATA_URL = "https://raw.githubusercontent.com/statsbomb/open-data/master/data/matches/43/2026.json"
+# ⚠️ REPLACE THE TEXT BELOW WITH YOUR FREE EMAIL TOKEN!
+API_TOKEN = "46364d6dcc9541a6b46495cc30f3c3c6"
+MATCHES_URL = "https://api.football-data.org/v4/competitions/WC/matches"
 
-@st.cache_data(ttl=10)
-def get_live_scores():
-    # 🌟 QUICK HAND-TYPED FIXES 🌟
-    # If a game literally just ended and you want it on screen instantly:
-    live_overrides = {
-        # "usa": 3, 
-    }
-
+@st.cache_data(ttl=30) # Refresh the server feed every 30 seconds
+def get_official_scores():
     team_points = {}
-    for team, points in live_overrides.items():
-        team_points[team.strip().lower()] = points
-
+    headers = { "X-Auth-Token": API_TOKEN }
+    
     try:
-        # Fetching raw tournament results
-        response = requests.get("https://raw.githubusercontent.com/openfootball/world-cup.json/master/2026/worldcup.json")
+        response = requests.get(MATCHES_URL, headers=headers)
         if response.status_code == 200:
             data = response.json()
             
-            for round_data in data.get('rounds', []):
-                for match in round_data.get('matches', []):
-                    # Step A: Only calculate if score properties are physically populated
-                    if match.get('score1') is not None and match.get('score2') is not None:
-                        t1 = match['team1']['name'].strip().lower()
-                        t2 = match['team2']['name'].strip().lower()
-                        s1 = int(match['score1'])
-                        s2 = int(match['score2'])
-                        
-                        # Initialize team counters safely if not in overrides
-                        if t1 not in live_overrides and t1 not in team_points: team_points[t1] = 0
-                        if t2 not in live_overrides and t2 not in team_points: team_points[t2] = 0
-                        
-                        # Step B: Standard Game Score distribution
-                        if s1 > s2:
-                            if t1 not in live_overrides: team_points[t1] += 3
-                        elif s2 > s1:
-                            if t2 not in live_overrides: team_points[t2] += 3
-                        else:
-                            # It's a draw at standard time
-                            # Note: For knockout phases, we check if a team won on penalties
-                            if match.get('score1et') is not None or match.get('score1p') is not None:
-                                # Knockout match resolved beyond normal time.
-                                # The team progressing gets the Win points (3), loser gets 0.
-                                p1 = int(match.get('score1p', match.get('score1et', 0)))
-                                p2 = int(match.get('score2p', match.get('score2et', 0)))
-                                if p1 > p2:
-                                    if t1 not in live_overrides: team_points[t1] += 3
-                                else:
-                                    if t2 not in live_overrides: team_points[t2] += 3
-                            else:
-                                # Regular group stage draw (1 point each)
-                                if t1 not in live_overrides: team_points[t1] += 1
-                                if t2 not in live_overrides: team_points[t2] += 1
+            for match in data.get('matches', []):
+                status = match.get('status')
+                
+                # Check if the game is currently live or has ended
+                if status in ['FINISHED', 'IN_PLAY', 'PAUSED']:
+                    # Use standard fallback names if names are slightly nested
+                    home_team = match['homeTeam']['name'].strip().lower()
+                    away_team = match['awayTeam']['name'].strip().lower()
+                    
+                    # Ensure entries are generated inside our calculator
+                    if home_team not in team_points: team_points[home_team] = 0
+                    if away_team not in team_points: team_points[away_team] = 0
+                    
+                    winner = match.get('score', {}).get('winner')
+                    
+                    if winner == 'HOME_TEAM':
+                        team_points[home_team] += 3
+                    elif winner == 'AWAY_TEAM':
+                        team_points[away_team] += 3
+                    elif winner == 'DRAW':
+                        team_points[home_team] += 1
+                        team_points[away_team] += 1
             return team_points
-    except Exception:
-        pass
+        else:
+            st.sidebar.error(f"API Error: Status {response.status_code}. Checking authentication configuration.")
+    except Exception as e:
+        st.sidebar.error(f"Connection Exception: {str(e)}")
         
-    # Backup dictionary that automatically takes effect if the primary data file fails to reach your app
-    fallback_live_data = {
-        "brazil": 6, "argentina": 4, "spain": 3, "mexico": 1, 
-        "france": 3, "england": 4, "usa": 3, "canada": 0
-    }
-    for team, points in fallback_live_data.items():
-        if team not in team_points:
-            team_points[team] = points
-            
     return team_points
 
-live_scores = get_live_scores()
+# Pull calculated points dictionary
+live_scores = get_official_scores()
 
 # ==========================================
 # 3. CALCULATE LEADERBOARD STANDINGS
@@ -99,8 +74,14 @@ standings = {}
 for player, teams in draft_data.items():
     total_score = 0
     for team in teams:
-        lowercase_team = team.strip().lower()
-        total_score += live_scores.get(lowercase_team, 0)
+        # Match data mapping using flexible string normalization
+        norm_team = team.strip().lower()
+        
+        # Mapping variations (e.g. "USA" vs "United States")
+        if norm_team == "usa": norm_team = "united states"
+        if norm_team == "south korea": norm_team = "korea republic"
+            
+        total_score += live_scores.get(norm_team, 0)
     standings[player] = total_score
 
 sorted_standings = sorted(standings.items(), key=lambda x: x[1], reverse=True)
@@ -108,18 +89,22 @@ sorted_standings = sorted(standings.items(), key=lambda x: x[1], reverse=True)
 # ==========================================
 # 4. DISPLAY THE VISUAL WEB LEADERBOARD
 # ==========================================
-st.header("🏆 Current Standings")
+st.header("🏆 Live Leaderboard")
 for rank, (player, points) in enumerate(sorted_standings, start=1):
     medal = "🥇" if rank == 1 else "🔹"
     st.subheader(f"{medal} Rank {rank}: {player} — {points} pts")
     
     teams_list = []
     for t in draft_data[player]:
-        t_pts = live_scores.get(t.strip().lower(), 0)
+        norm_t = t.strip().lower()
+        if norm_t == "usa": norm_t = "united states"
+        if norm_t == "south korea": norm_t = "korea republic"
+            
+        t_pts = live_scores.get(norm_t, 0)
         teams_list.append(f"{t} ({t_pts}pts)")
         
     teams_str = ", ".join(teams_list)
     st.caption(f"Drafted Teams: {teams_str}")
     st.markdown("---")
 
-st.info("🔄 Live Score Connection Secured. Points apply dynamically to your leaderboard.")
+st.info("⚡ Live Connection Active. Data updates from the stadium every 30 seconds upon page interaction.")
