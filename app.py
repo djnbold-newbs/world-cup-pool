@@ -14,7 +14,7 @@ draft_data = {
     "Aaron": ["Brazil", "USA", "Japan", "Ecuador", "Senegal", "Ghana"],
     "Alex": ["France", "Germany", "Belgium", "Switzerland", "Austria", "Scotland"],
     "Dan": ["England", "Netherlands", "Mexico", "Morocco", "Canada", "Ivory Coast"],
-    "Chris": ["Argentina", "Portugal", "Uruguay", "Croatia", "Czechia", "Republic of Korea"]
+    "Chris": ["Argentina", "Portugal", "Uruguay", "Croatia", "Czechia", "South Korea"]
 }
 
 # ==========================================
@@ -73,15 +73,20 @@ live_scores = get_official_scores()
 # ==========================================
 # 3. CALCULATE LEADERBOARD STANDINGS
 # ==========================================
+# ==========================================
+# 3. CALCULATE LEADERBOARD STANDINGS
+# ==========================================
 standings = {}
 for player, teams in draft_data.items():
     total_score = 0
     for team in teams:
         norm_team = team.strip().lower()
-        if norm_team == "usa": 
+        
+        # Comprehensive alternative name intercepts
+        if norm_team in ["usa", "united states"]: 
             norm_team = "united states"
-        if norm_team == "south korea": 
-            norm_team = "republic of korea"
+        if norm_team in ["south korea", "korea republic", "republic of korea"]: 
+            norm_team = "korea republic"
             
         total_score += live_scores.get(norm_team, 0)
     standings[player] = total_score
@@ -99,10 +104,12 @@ for rank, (player, points) in enumerate(sorted_standings, start=1):
     teams_list = []
     for t in draft_data[player]:
         norm_t = t.strip().lower()
-        if norm_t == "usa": 
+        
+        # Apply the exact same structural naming fixes for the visual breakdown lists
+        if norm_t in ["usa", "united states"]: 
             norm_t = "united states"
-        if norm_t == "south korea": 
-            norm_t = "republic of korea"
+        if norm_t in ["south korea", "korea republic", "republic of korea"]: 
+            norm_t = "korea republic"
             
         t_pts = live_scores.get(norm_t, 0)
         teams_list.append(f"{t} ({t_pts}pts)")
