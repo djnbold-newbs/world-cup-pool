@@ -81,7 +81,7 @@ for player, teams in draft_data.items():
         if norm_team == "usa": norm_team = "united states"
 if norm_team == "south korea": norm_team = "republic of korea"  # 👈 Updated here
             
-        total_score += live_scores.get(norm_team, 0)
+    total_score += live_scores.get(norm_team, 0)
     standings[player] = total_score
 
 sorted_standings = sorted(standings.items(), key=lambda x: x[1], reverse=True)
