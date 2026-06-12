@@ -77,21 +77,17 @@ standings = {}
 for player, teams in draft_data.items():
     total_score = 0
     for team in teams:
-        # Match data mapping using flexible string normalization
         norm_team = team.strip().lower()
-        
-        # Mapping variations (e.g. "USA" vs "United States")
         if norm_team == "usa": 
             norm_team = "united states"
         if norm_team == "south korea": 
             norm_team = "republic of korea"
             
-        total_score += live_scores.get(norm_team, 0)  # 👈 THIS IS LINE 84
+        total_score += live_scores.get(norm_team, 0)
     standings[player] = total_score
 
-# ==========================================
-# 4. DISPLAY THE VISUAL WEB LEADERBOARD
-# ==========================================
+sorted_standings = sorted(standings.items(), key=lambda x: x[1], reverse=True)
+
 # ==========================================
 # 4. DISPLAY THE VISUAL WEB LEADERBOARD
 # ==========================================
