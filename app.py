@@ -19,7 +19,6 @@ draft_data = {
 # 2. Fetch Tournament Match Data
 DATA_URL = "https://raw.githubusercontent.com/openfootball/world-cup.json/master/2026/worldcup.json"
 
-@st.cache_data(ttl=600) # Caches data for 10 minutes to save bandwidth
 @st.cache_data(ttl=10)
 def get_live_scores():
     # 🌟 MANUAL GAME DAY OVERRIDES 🌟
