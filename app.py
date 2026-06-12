@@ -20,39 +20,49 @@ draft_data = {
 DATA_URL = "https://raw.githubusercontent.com/openfootball/world-cup.json/master/2026/worldcup.json"
 
 @st.cache_data(ttl=600) # Caches data for 10 minutes to save bandwidth
+@st.cache_data(ttl=10)
 def get_live_scores():
+    # 🌟 MANUAL GAME DAY OVERRIDES 🌟
+    # If the official repo is lagging, type the live scores right here!
+    # This will override or supplement any matches automatically.
+    live_overrides = {
+        "usa": 3,       # e.g., USA won their game, manually adding 3 pts
+        "mexico": 1,    # e.g., Mexico drew, adding 1 pt
+    }
+
     team_points = {}
+    
+    # Apply manual overrides as the starting baseline
+    for team, points in live_overrides.items():
+        team_points[team.strip().lower()] = points
+
     try:
         response = requests.get(DATA_URL)
         if response.status_code == 200:
             data = response.json()
             for round_data in data.get('rounds', []):
                 for match in round_data.get('matches', []):
-                    # Check if match has concluded
                     if match.get('score1') is not None and match.get('score2') is not None:
-                        t1 = match['team1']['name'].strip()
-                        t2 = match['team2']['name'].strip()
+                        t1 = match['team1']['name'].strip().lower()
+                        t2 = match['team2']['name'].strip().lower()
                         s1 = int(match['score1'])
                         s2 = int(match['score2'])
                         
-                        team_points[t1] = team_points.get(t1, 0)
-                        team_points[t2] = team_points.get(t2, 0)
-                        
-                        if s1 > s2:
-                            team_points[t1] += 3
-                        elif s2 > s1:
-                            team_points[t2] += 3
-                        else:
-                            team_points[t1] += 1
-                            team_points[t2] += 1
+                        # Only apply automated data if we haven't manually overridden it
+                        if t1 not in live_overrides:
+                            team_points[t1] = team_points.get(t1, 0)
+                            if s1 > s2: team_points[t1] += 3
+                            elif s1 == s2: team_points[t1] += 1
+                                
+                        if t2 not in live_overrides:
+                            team_points[t2] = team_points.get(t2, 0)
+                            if s2 > s1: team_points[t2] += 3
+                            elif s1 == s2: team_points[t2] += 1
             return team_points
     except Exception:
         pass
     
-    # Fallback pre-tournament mock scores
-    return {"Brazil": 9, "Argentina": 9, "Spain": 7, "Mexico": 7, "France": 6, "England": 5, "USA": 4, "Canada": 3}
-
-live_scores = get_live_scores()
+    return team_points
 
 # 3. Calculate Leaderboard Standings
 standings = {}
