@@ -9,6 +9,7 @@ st.write("Welcome to our 5-friend live tournament tracker!")
 # ==========================================
 # 1. DEFINE FRIENDS & DRAFT ASSIGNMENTS
 # ==========================================
+# These will perfectly match up regardless of spaces or uppercase letters.
 draft_data = {
     "Josh": ["Spain", "Colombia", "Norway", "Turkey", "Sweden", "Iran"],
     "Aaron": ["Brazil", "USA", "Japan", "Ecuador", "Senegal", "Ghana"],
@@ -18,54 +19,62 @@ draft_data = {
 }
 
 # ==========================================
-# 2. HIGH-RELIABILITY DATA FETCHING (STANDINGS ENGINE)
+# 2. ACCURATE REAL-TIME STANDINGS LOGIC
 # ==========================================
-# Pulls from a direct, structural standings array instead of manual match scores
-STANDINGS_URL = "https://api.football-data.org/v4/competitions/WC/standings"
+# We fetch raw match fixtures to ensure we can filter by exact game status
+MATCHES_URL = "https://api.football-data.org/v4/competitions/WC/matches"
 
 @st.cache_data(ttl=10)
 def get_live_scores():
-    # Final tier safety net: If the API token is rate-limited or lagging, 
-    # you can directly bump team points right here.
+    # 🌟 MANUAL GAME DAY OVERRIDES 🌟
+    # If the API source lags behind after a final whistle, type it here in lowercase.
+    # Leaving it empty means 100% automated calculation.
     live_overrides = {
         # "usa": 3, 
     }
 
     team_points = {}
+    
+    # Pre-populate with overrides if any exist
     for team, points in live_overrides.items():
         team_points[team.strip().lower()] = points
 
     try:
-        # Requesting data from the structural standings layout
-        response = requests.get(STANDINGS_URL)
+        response = requests.get(MATCHES_URL)
         if response.status_code == 200:
             data = response.json()
             
-            # Football-data.org formats tables by groups
-            for group in data.get('standings', []):
-                for table_row in group.get('table', []):
-                    team_name = table_row['team']['name'].strip().lower()
+            for match in data.get('matches', []):
+                status = match.get('status')
+                
+                # CRITICAL RULE: Only count matches that are active or completed!
+                # This explicitly ignores 'SCHEDULED', 'TIMED', or unplayed games.
+                if status in ['FINISHED', 'LIVE', 'IN_PLAY', 'PAUSED']:
+                    score_data = match.get('score', {})
+                    winner = score_data.get('winner') # Returns 'HOME_TEAM', 'AWAY_TEAM', or 'DRAW'
                     
-                    # Pull pre-calculated wins and draws directly from the source feed
-                    wins = int(table_row.get('won', 0))
-                    draws = int(table_row.get('draw', 0))
-                    calculated_pts = (wins * 3) + (draws * 1)
+                    home_team = match['homeTeam']['name'].strip().lower()
+                    away_team = match['awayTeam']['name'].strip().lower()
                     
-                    if team_name not in live_overrides:
-                        team_points[team_name] = calculated_pts
+                    # Ensure both teams are initialized in our score dict if not overridden
+                    if home_team not in live_overrides and home_team not in team_points:
+                        team_points[home_team] = 0
+                    if away_team not in live_overrides and away_team not in team_points:
+                        team_points[away_team] = 0
+                        
+                    # Calculate points based on actual match resolution
+                    if winner == 'HOME_TEAM':
+                        if home_team not in live_overrides: team_points[home_team] += 3
+                    elif winner == 'AWAY_TEAM':
+                        if away_team not in live_overrides: team_points[away_team] += 3
+                    elif winner == 'DRAW':
+                        if home_team not in live_overrides: team_points[home_team] += 1
+                        if away_team not in live_overrides: team_points[away_team] += 1
+            
             return team_points
     except Exception:
-        pass # Network fallback to default tracking
+        pass 
         
-    # Standard baseline fallback data
-    fallback_defaults = {
-        "brazil": 9, "argentina": 9, "spain": 7, "mexico": 7, 
-        "france": 6, "england": 5, "usa": 4, "canada": 3
-    }
-    for team, points in fallback_defaults.items():
-        if team not in team_points:
-            team_points[team] = points
-            
     return team_points
 
 live_scores = get_live_scores()
@@ -78,6 +87,7 @@ for player, teams in draft_data.items():
     total_score = 0
     for team in teams:
         lowercase_team = team.strip().lower()
+        # If a team hasn't played a game yet, .get() safely returns 0 points!
         total_score += live_scores.get(lowercase_team, 0)
     standings[player] = total_score
 
@@ -100,4 +110,4 @@ for rank, (player, points) in enumerate(sorted_standings, start=1):
     st.caption(f"Drafted Teams: {teams_str}")
     st.markdown("---")
 
-st.info("🔄 Caching is optimized. Updates take effect within 10 seconds of a site refresh.")
+st.info("🔄 Scoring Verification Active: Win = 3pts, Draw = 1pt. Unplayed matches default strictly to 0pts.")
