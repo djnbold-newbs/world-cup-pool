@@ -3,7 +3,7 @@ import requests
 
 st.set_page_config(page_title="World Cup Pool", page_icon="⚽", layout="centered")
 
-st.title("⚽ Live World Cup Draft Pool")
+st.title("⚽ NT's World Cup Pool")
 st.write("Live-syncing directly with official tournament match scores!")
 
 # ==========================================
