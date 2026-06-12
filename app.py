@@ -14,7 +14,7 @@ draft_data = {
     "Aaron": ["Brazil", "USA", "Japan", "Ecuador", "Senegal", "Ghana"],
     "Alex": ["France", "Germany", "Belgium", "Switzerland", "Austria", "Scotland"],
     "Dan": ["England", "Netherlands", "Mexico", "Morocco", "Canada", "Ivory Coast"],
-    "Chris": ["Argentina", "Portugal", "Uruguay", "Croatia", "Czechia", "South Korea"]
+    "Chris": ["Argentina", "Portugal", "Uruguay", "Croatia", "Czechia", "Republic of Korea"]
 }
 
 # ==========================================
