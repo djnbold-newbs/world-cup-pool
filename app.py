@@ -101,7 +101,7 @@ for rank, (player, points) in enumerate(sorted_standings, start=1):
     for t in draft_data[player]:
         norm_t = t.strip().lower()
        if norm_t == "usa": norm_t = "united states"
-if norm_t == "south korea": norm_t = "republic of korea"  # 👈 Updated here
+        if norm_t == "south korea": norm_t = "republic of korea"  # 👈 Updated here
             
         t_pts = live_scores.get(norm_t, 0)
         teams_list.append(f"{t} ({t_pts}pts)")
