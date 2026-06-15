@@ -108,7 +108,7 @@ for rank, (player, points) in enumerate(sorted_standings, start=1):
         # Apply the exact same structural naming fixes for the visual breakdown lists
         if norm_t in ["usa", "united states"]: 
             norm_t = "united states"
-         if norm_team in ["south korea", "korea republic", "korea", "South Korea Republic" "s.korea", "republic of korea"]: 
+        if norm_team in ["south korea", "korea republic", "korea", "South Korea Republic" "s.korea", "republic of korea"]: 
             norm_team = "korea republic"
             
         t_pts = live_scores.get(norm_t, 0)
