@@ -14,7 +14,7 @@ draft_data = {
     "Aaron": ["Brazil", "USA", "Japan", "Ecuador", "Senegal", "Ghana"],
     "Alex": ["France", "Germany", "Belgium", "Switzerland", "Austria", "Scotland"],
     "Dan": ["England", "Netherlands", "Mexico", "Morocco", "Canada", "Ivory Coast"],
-    "Chris": ["Argentina", "Portugal", "Uruguay", "Croatia", "Czechia", "Korea Republic"]
+    "Chris": ["Argentina", "Portugal", "Uruguay", "Croatia", "Czechia", "South Korea"]
 }
 
 # ==========================================
@@ -86,7 +86,7 @@ for player, teams in draft_data.items():
         if norm_team in ["usa", "united states"]: 
             norm_team = "united states"
         if norm_team in ["south korea", "korea republic", "korea", "South Korea Republic" "s.korea", "republic of korea"]: 
-            norm_team = "korea republic"
+            norm_team = "South Korea"
             
         total_score += live_scores.get(norm_team, 0)
     standings[player] = total_score
@@ -109,7 +109,7 @@ for rank, (player, points) in enumerate(sorted_standings, start=1):
         if norm_t in ["usa", "united states"]: 
             norm_t = "united states"
         if norm_team in ["south korea", "korea republic", "korea", "South Korea Republic" "s.korea", "republic of korea"]: 
-            norm_team = "korea republic"
+            norm_team = "South Korea"
             
         t_pts = live_scores.get(norm_t, 0)
         teams_list.append(f"{t} ({t_pts}pts)")
