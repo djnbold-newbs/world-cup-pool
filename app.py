@@ -20,7 +20,6 @@ draft_data = {
 # ==========================================
 # 2. LIVE REFRESH DATA ENGINE
 # ==========================================
-# ⚠️ REPLACE THE TEXT BELOW WITH YOUR FREE EMAIL TOKEN!
 API_TOKEN = "46364d6dcc9541a6b46495cc30f3c3c6"
 MATCHES_URL = "https://api.football-data.org/v4/competitions/WC/matches"
 
@@ -70,23 +69,17 @@ live_scores = get_official_scores()
 # ==========================================
 # 3. CALCULATE LEADERBOARD STANDINGS
 # ==========================================
-# ==========================================
-# 3. CALCULATE LEADERBOARD STANDINGS
-# ==========================================
-# ==========================================
-# 3. CALCULATE LEADERBOARD STANDINGS
-# ==========================================
 standings = {}
 for player, teams in draft_data.items():
     total_score = 0
     for team in teams:
         norm_team = team.strip().lower()
         
-        # Comprehensive alternative name intercepts
+        # Comprehensive alternative name intercepts (Mapping safely to the API's lowercase strings)
         if norm_team in ["usa", "united states"]: 
             norm_team = "united states"
-        if norm_team in ["south korea", "korea republic", "korea", "South Korea Republic" "s.korea", "republic of korea"]: 
-            norm_team = "South Korea"
+        if norm_team in ["south korea", "korea republic", "korea", "south korea republic", "s.korea", "republic of korea"]: 
+            norm_team = "korea republic"
             
         total_score += live_scores.get(norm_team, 0)
     standings[player] = total_score
@@ -105,11 +98,11 @@ for rank, (player, points) in enumerate(sorted_standings, start=1):
     for t in draft_data[player]:
         norm_t = t.strip().lower()
         
-        # Apply the exact same structural naming fixes for the visual breakdown lists
+        # Fixed variables to check norm_t instead of norm_team
         if norm_t in ["usa", "united states"]: 
             norm_t = "united states"
-        if norm_team in ["south korea", "korea republic", "korea", "South Korea Republic" "s.korea", "republic of korea"]: 
-            norm_team = "South Korea"
+        if norm_t in ["south korea", "korea republic", "korea", "south korea republic", "s.korea", "republic of korea"]: 
+            norm_t = "korea republic"
             
         t_pts = live_scores.get(norm_t, 0)
         teams_list.append(f"{t} ({t_pts}pts)")
