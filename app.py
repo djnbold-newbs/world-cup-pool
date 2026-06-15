@@ -14,7 +14,7 @@ draft_data = {
     "Aaron": ["Brazil", "USA", "Japan", "Ecuador", "Senegal", "Ghana"],
     "Alex": ["France", "Germany", "Belgium", "Switzerland", "Austria", "Scotland"],
     "Dan": ["England", "Netherlands", "Mexico", "Morocco", "Canada", "Ivory Coast"],
-    "Chris": ["Argentina", "Portugal", "Uruguay", "Croatia", "Czechia", "Korea Republic"]
+    "Chris": ["Argentina", "Portugal", "Uruguay", "Croatia", "Czechia", "South Korea"]
 }
 
 # ==========================================
@@ -85,7 +85,7 @@ for player, teams in draft_data.items():
         # Comprehensive alternative name intercepts
         if norm_team in ["usa", "united states"]: 
             norm_team = "united states"
-        if norm_team in ["south korea", "korea republic", "korea", "s.korea", "republic of korea"]: 
+        if norm_team in ["south korea", "korea republic", "korea", "South Korea Republic" "s.korea", "republic of korea"]: 
             norm_team = "korea republic"
             
         total_score += live_scores.get(norm_team, 0)
@@ -108,8 +108,8 @@ for rank, (player, points) in enumerate(sorted_standings, start=1):
         # Apply the exact same structural naming fixes for the visual breakdown lists
         if norm_t in ["usa", "united states"]: 
             norm_t = "united states"
-        if norm_t in ["south korea", "korea republic", "republic of korea"]: 
-            norm_t = "korea republic"
+        if norm_team in ["south korea", "korea republic", "korea", "South Korea Republic" "s.korea", "republic of korea"]: 
+            norm_team = "korea republic"
             
         t_pts = live_scores.get(norm_t, 0)
         teams_list.append(f"{t} ({t_pts}pts)")
