@@ -85,7 +85,7 @@ for player, teams in draft_data.items():
         # Comprehensive alternative name intercepts
         if norm_team in ["usa", "united states"]: 
             norm_team = "united states"
-        if norm_team in ["south korea", "korea republic", "korea", "republic of korea"]: 
+        if norm_team in ["south korea", "korea republic", "korea", "s.korea", "republic of korea"]: 
             norm_team = "korea republic"
             
         total_score += live_scores.get(norm_team, 0)
